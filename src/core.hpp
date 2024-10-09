@@ -5,8 +5,8 @@
 
 //#include "gui\mainwindow.hpp"
 //#include "gui\interface.hpp"
-#include "gui\gui.hpp"
-#include "model\CpuModel.hpp"
+#include "gui/gui.hpp"
+#include "model/CpuModel.hpp"
 //#include "presets\modelpresets.hpp"
 #include "sdl_manager.hpp"
 

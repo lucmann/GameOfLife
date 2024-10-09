@@ -44,7 +44,7 @@ add_executable(gameoflife
 )
 
 # Include directories for gameoflife
-target_include_directories(gameoflife PRIVATE src submodules/sdl3/include submodules/imgui)
+target_include_directories(gameoflife PRIVATE src submodules submodules/sdl3/include submodules/imgui)
 
 # Link against SDL3 and ImGui libraries
 target_link_libraries(gameoflife PRIVATE SDL3::SDL3 imgui)
@@ -64,33 +64,33 @@ add_custom_command(
 )
 
 #copy SDL3.dll
-add_custom_command(
-    TARGET gameoflife 
-    POST_BUILD
-
-    COMMAND ${CMAKE_COMMAND} -E echo "Copying SDL3.dll from: $<IF:$<CONFIG:Debug>,${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Debug/SDL3.dll,${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Release/SDL3.dll>"
-
-    COMMAND ${CMAKE_COMMAND} -E copy
-    $<IF:$<CONFIG:Debug>,${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Debug/SDL3.dll,${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Release/SDL3.dll>
-    $<TARGET_FILE_DIR:gameoflife>
-
- #   COMMAND ${CMAKE_COMMAND} -E copy
- #          $<IF:$<CONFIG:Release>, ${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Debug/SDL3.dll, ${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Release/SDL3.dll>
- #           ${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Release/SDL3.dll
- #           $<TARGET_FILE_DIR:gameoflife>
-)
+#add_custom_command(
+#    TARGET gameoflife 
+#    POST_BUILD
+#
+#    COMMAND ${CMAKE_COMMAND} -E echo "Copying SDL3.dll from: $<IF:$<CONFIG:Debug>,${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Debug/SDL3.dll,${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Release/SDL3.dll>"
+#
+#    COMMAND ${CMAKE_COMMAND} -E copy
+#    $<IF:$<CONFIG:Debug>,${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Debug/SDL3.dll,${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Release/SDL3.dll>
+#    $<TARGET_FILE_DIR:gameoflife>
+#
+# #   COMMAND ${CMAKE_COMMAND} -E copy
+# #          $<IF:$<CONFIG:Release>, ${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Debug/SDL3.dll, ${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Release/SDL3.dll>
+# #           ${CMAKE_SOURCE_DIR}/build/submodules/sdl3/Release/SDL3.dll
+# #           $<TARGET_FILE_DIR:gameoflife>
+#)
 
 #copy imgui 
-add_custom_command(
-    TARGET gameoflife 
-    POST_BUILD
-
-    COMMAND ${CMAKE_COMMAND} -E echo "Copying imgui.dll from: $<IF:$<CONFIG:Debug>,${CMAKE_SOURCE_DIR}/build/cmake/imgui/Debug/imgui.dll,${CMAKE_SOURCE_DIR}/build/cmake/imgui/Release/imgui.dll>"
-
-    COMMAND ${CMAKE_COMMAND} -E copy
-    $<IF:$<CONFIG:Debug>,${CMAKE_SOURCE_DIR}/build/cmake/imgui/Debug/imgui.dll,${CMAKE_SOURCE_DIR}/build/cmake/imgui/Release/imgui.dll>
-    $<TARGET_FILE_DIR:gameoflife>
-)
+#add_custom_command(
+#    TARGET gameoflife 
+#    POST_BUILD
+#
+#    COMMAND ${CMAKE_COMMAND} -E echo "Copying imgui.dll from: $<IF:$<CONFIG:Debug>,${CMAKE_SOURCE_DIR}/build/cmake/imgui/Debug/imgui.dll,${CMAKE_SOURCE_DIR}/build/cmake/imgui/Release/imgui.dll>"
+#
+#    COMMAND ${CMAKE_COMMAND} -E copy
+#    $<IF:$<CONFIG:Debug>,${CMAKE_SOURCE_DIR}/build/cmake/imgui/Debug/imgui.dll,${CMAKE_SOURCE_DIR}/build/cmake/imgui/Release/imgui.dll>
+#    $<TARGET_FILE_DIR:gameoflife>
+#)
 
 
 #if(CMAKE_BUILD_TYPE STREQUAL "Debug")

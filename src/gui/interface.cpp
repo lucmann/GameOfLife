@@ -1,5 +1,5 @@
-#include <gui\interface.hpp>
-#include <presets\modelpresets.hpp>
+#include <gui/interface.hpp>
+#include <presets/modelpresets.hpp>
 
 
 #include <iostream>

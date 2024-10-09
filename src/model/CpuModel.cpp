@@ -1,8 +1,8 @@
 #include "CpuModel.hpp"
 #include "presets/modelpresets.hpp"
 #include "gui/WidgetFunctions.hpp"
-#include "../submodules/ImGuiScope/ImguiScope.hpp"
-#include "../submodules/portable-file-dialogs/portable-file-dialogs.h"
+#include "ImGuiScope/ImGuiScope.hpp"
+#include "portable-file-dialogs/portable-file-dialogs.h"
 
 #include <imgui.h>
 
