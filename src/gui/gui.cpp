@@ -21,12 +21,19 @@ bool GUI::initialize(
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.Fonts->AddFontDefault();
+	std::string path;
+	std::string file(__FILE__);
+	std::replace(file.begin(), file.end(), '\\', '/');
+	std::string::size_type lastSlash = file.rfind("/");
+	file = file.substr(0, lastSlash);
+	path = file + "/../../resources/fonts/JetBrainsMono-Regular.ttf";
+
+	io.Fonts->AddFontFromFileTTF(path.c_str(), 16.0f);
 	io.Fonts->Build();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
-	io.FontGlobalScale = 2;
+	io.FontGlobalScale = 1;
 
 	if (!ImGui_ImplSDL3_InitForSDLRenderer(mainWindow.sdlWindow, mainWindow.sdlRenderer)) return false;//fails... mainwindow does not have a renderer
 	if (!ImGui_ImplSDLRenderer3_Init(mainWindow.sdlRenderer)) return false;
