@@ -88,6 +88,12 @@ void Core::processEvents_() {
             case SDL_EventType::SDL_EVENT_KEY_DOWN:
                 handleSDL_KEYDOWN(event);
                 break;
+            case SDL_EventType::SDL_EVENT_MOUSE_BUTTON_DOWN:
+                if (event.button.clicks == 1) {
+                    SDL_ConvertEventToRenderCoordinates(gui_.mainWindow.sdlRenderer, &event);
+                    cpuModel_.setMouseMove(event.button.x, event.button.y);
+                }
+                break;
         }
         //In the future, I would like an event manager where you can register objects to receive events.
         //When I have an event manager, objects can register for WHICH events they want to receive to make it run a little better. 

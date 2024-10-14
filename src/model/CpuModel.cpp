@@ -32,6 +32,14 @@ void CpuModel::setViewPort(const SDL_Rect& viewPort)
 	recalcDrawRange_ = true;
 }
 
+void CpuModel::setMouseMove(float x, float y)
+{
+    mouseMove_.prevX = mouseMove_.currX;
+    mouseMove_.prevY = mouseMove_.currY;
+    mouseMove_.currX = x;
+    mouseMove_.currY = y;
+}
+
 void CpuModel::resizeGrid_()
 {
 	grid_.resize(activeModelParams_.modelHeight, std::vector<uint8_t>(activeModelParams_.modelWidth, 0));
@@ -55,7 +63,7 @@ void CpuModel::initBackbuffer_(SDL_Renderer* renderer)
         SDL_CreateTexture(
             renderer,
             SDL_PIXELFORMAT_RGB565,
-            SDL_TEXTUREACCESS_STREAMING,
+            SDL_TEXTUREACCESS_TARGET,
             activeModelParams_.modelWidth,
             activeModelParams_.modelHeight
         )
@@ -132,6 +140,9 @@ void CpuModel::draw(SDL_Renderer* renderer)
     //I could have a bool that says the texture needs updating before drawing and handle that in core.cpp.
     //This also shouldn't be calculated every frame.. 
     
+    // At the firt time we've got only one point, so give up drawing
+    if (mouseMove_.prevX < 0)
+        return;
 
     //This should just be what is written to activeModelParams_.displacementX and activeModelParams_.displacementY
     //For that I'll need to grab window resize events.
@@ -155,31 +166,36 @@ void CpuModel::draw(SDL_Renderer* renderer)
     auto drawBackBufferTimer = std::make_optional<ImGuiScope::TimeScope>("Draw My Backbuffer");
 
     SDL_SetRenderTarget(renderer, gridBackBuffer_.get());
-    Uint16* pixels;
-    int pitch = 0;
-    SDL_LockTexture(gridBackBuffer_.get(), nullptr, (void**)&pixels, &pitch);
 
-    int rowCount = grid_.size();
-    int columnCount = grid_[0].size();
-    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
-    {
-        for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
-        //for (int columnIndex = drawRange_.columnBegin; columnIndex <= drawRange_.columnEnd; columnIndex++)
-        {
-            //I could optimize this a tiny bit by having pixel format defined at compile time,
-            //and having pitch defined just one when model size changes.
-            SDL_Color color = colorMapper_.getSDLColor(grid_[rowIndex][columnIndex]);
+    // try to draw a line
+    SDL_SetRenderDrawColorFloat(renderer, 1.0, 0, 0, 1.0);
+    SDL_RenderLine(renderer, mouseMove_.prevX, mouseMove_.prevY, mouseMove_.currX, mouseMove_.currY);
 
-            pixels[(rowIndex ) * grid_[0].size() + columnIndex] = SDL_MapRGB(
-                SDL_GetPixelFormatDetails(SDL_PIXELFORMAT_RGB565),
-                nullptr,
-                color.r,
-                color.g,
-                color.b);
-        }
-    }
+    // Uint16* pixels;
+    // int pitch = 0;
+    // SDL_LockTexture(gridBackBuffer_.get(), nullptr, (void**)&pixels, &pitch);
 
-    SDL_UnlockTexture(gridBackBuffer_.get());
+    // int rowCount = grid_.size();
+    // int columnCount = grid_[0].size();
+    // for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
+    // {
+    //     for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
+    //     //for (int columnIndex = drawRange_.columnBegin; columnIndex <= drawRange_.columnEnd; columnIndex++)
+    //     {
+    //         //I could optimize this a tiny bit by having pixel format defined at compile time,
+    //         //and having pitch defined just one when model size changes.
+    //         SDL_Color color = colorMapper_.getSDLColor(grid_[rowIndex][columnIndex]);
+
+    //         pixels[(rowIndex ) * grid_[0].size() + columnIndex] = SDL_MapRGB(
+    //             SDL_GetPixelFormatDetails(SDL_PIXELFORMAT_RGB565),
+    //             nullptr,
+    //             color.r,
+    //             color.g,
+    //             color.b);
+    //     }
+    // }
+
+    // SDL_UnlockTexture(gridBackBuffer_.get());
     SDL_SetRenderTarget(renderer, nullptr);
     auto destRect = SDL_FRect{
         (float)screenSpaceDisplacementX_,
@@ -187,6 +203,7 @@ void CpuModel::draw(SDL_Renderer* renderer)
         (float)grid_[0].size() * activeModelParams_.zoomLevel, 
         (float)grid_.size() * activeModelParams_.zoomLevel };
     SDL_RenderTexture(renderer, gridBackBuffer_.get(), nullptr, &destRect);
+
     drawBackBufferTimer.reset();
 }
 
@@ -230,10 +247,10 @@ void CpuModel::handleSDLEvent(const SDL_Event& event)
         if (mouseButtonState & SDL_BUTTON(SDL_BUTTON_LEFT) && event.type == SDL_EVENT_MOUSE_MOTION)
         {
       
-            activeModelParams_.displacementX += event.motion.xrel;
-            activeModelParams_.displacementY += event.motion.yrel;
-            //TODO:Check that it is within bounds of a maximum displacement
-            recalcDrawRange_ = true;
+            // activeModelParams_.displacementX += event.motion.xrel;
+            // activeModelParams_.displacementY += event.motion.yrel;
+            // //TODO:Check that it is within bounds of a maximum displacement
+            // recalcDrawRange_ = true;
         }
         else if (event.type == SDL_EventType::SDL_EVENT_MOUSE_WHEEL)
         {

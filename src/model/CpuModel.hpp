@@ -33,6 +33,7 @@ public:
 
 	void setViewPort(const SDL_Rect& viewPort) override;
 
+	void setMouseMove(float x, float y);
 	void generateModel(const ModelParameters& modelParameters);
 
 private:
@@ -58,6 +59,15 @@ private:
 
 	GridDrawRange getDrawRange_();
 
+	struct MouseMove
+	{
+		float prevX = -1.0f;
+		float prevY = -1.0f;
+		float currX = -1.0f;
+		float currY = -1.0f;
+	};
+
+
 private:
 	//I might change this to a struct that has a flag for if I should check it,
 	//and an int with the value. 
@@ -71,8 +81,8 @@ private:
 	
 	ModelParameters activeModelParams_{
 		true,
-		400,
-		400
+		1260,
+		720
 	};
 
 	ColorMapper colorMapper_;
@@ -90,6 +100,7 @@ private:
 	//bool completeBackbufferRedrawRequired_ = true;
 
 	GridDrawRange drawRange_;
+	MouseMove mouseMove_;
 	int screenSpaceDisplacementX_ = 0;
 	int screenSpaceDisplacementY_ = 0;
 

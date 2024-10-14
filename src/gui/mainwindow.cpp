@@ -23,6 +23,9 @@ void MainWindow::initialize(std::string windowName)
 		nullptr
 	);
 	SDL_SetRenderVSync(sdlRenderer, 1);
+	SDL_SetRenderLogicalPresentation(sdlRenderer, 1280, 720,
+									 SDL_LOGICAL_PRESENTATION_INTEGER_SCALE,
+									 SDL_SCALEMODE_NEAREST);
 	SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }
 
