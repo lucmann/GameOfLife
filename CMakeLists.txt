@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add submodules
+set(SDL_EXAMPLES ON)
 add_subdirectory(submodules/sdl3)
 #imgui does not provide a CMakeLists.txt file, so we need to add it manually
 add_subdirectory(cmake/imgui)
