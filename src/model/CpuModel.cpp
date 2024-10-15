@@ -35,10 +35,8 @@ void CpuModel::setViewPort(const SDL_Rect& viewPort)
 
 void CpuModel::setMouseMove(float x, float y)
 {
-    mouseMove_.prevX = mouseMove_.currX;
-    mouseMove_.prevY = mouseMove_.currY;
-    mouseMove_.currX = x;
-    mouseMove_.currY = y;
+    glRenderer_->gatherPoint(x, y);
+    std::cout << x << ", " << y << std::endl;
 }
 
 void CpuModel::resizeGrid_()
@@ -167,8 +165,6 @@ void CpuModel::draw(SDL_Renderer* renderer)
     auto drawBackBufferTimer = std::make_optional<ImGuiScope::TimeScope>("Draw My Backbuffer");
 
     SDL_SetRenderTarget(renderer, gridBackBuffer_.get());
-
-    std::cout << mouseMove_.currX << ", " << mouseMove_.currY << std::endl;
 
     // Uint16* pixels;
     // int pitch = 0;

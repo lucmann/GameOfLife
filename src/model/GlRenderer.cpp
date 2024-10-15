@@ -14,6 +14,12 @@ GL_Renderer::GL_Renderer(SDL_Window * sdlWindow):
 }
 
 void
+GL_Renderer::gatherPoint(float x, float y)
+{
+    points.push_back({x, y});
+}
+
+void
 GL_Renderer::bindSDLTextureToFBO(SDL_Texture *sdlTexture)
 {
     glGenTextures(1, &texture);
@@ -32,15 +38,23 @@ GL_Renderer::bindSDLTextureToFBO(SDL_Texture *sdlTexture)
         std::cerr << "Failed to create framebuffer" << std::endl;
         return;
     }
+
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(9.9);
 }
 
 // Vertex Shader source code
 const char* vertexShaderSource = R"(
 #version 330 core
-layout(location = 0) in vec3 aPos;
+layout(location = 0) in vec2 aPos;
 
 void main() {
-    gl_Position = vec4(aPos, 1.0);
+    const int SCREEN_WIDTH = 1260;
+    const int SCREEN_HEIGHT = 720;
+
+    float x_ndc = (2.0f * aPos.x) / SCREEN_WIDTH - 1.0f;
+    float y_ndc = 1.0f - (2.0f * aPos.y) / SCREEN_HEIGHT;
+    gl_Position = vec4(x_ndc, -y_ndc, 0.0, 1.0);
 }
 )";
 
@@ -62,9 +76,9 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
 
     // Define the triangle vertices
     GLfloat vertices[] = {
-         0.0f,  0.5f, 0.0f,  // top vertex
-        -0.5f, -0.5f, 0.0f,  // bottom left vertex
-         0.5f, -0.5f, 0.0f   // bottom right vertex
+         0.0f,  0.5f,  // top vertex
+        -0.5f, -0.5f,  // bottom left vertex
+         0.5f, -0.5f   // bottom right vertex
     };
 
 #if 1
@@ -72,13 +86,13 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     GLuint VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(Point), points.data(), GL_STATIC_DRAW);
 
     // Create a vertex array object (VAO)
     GLuint VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Point), (GLvoid*)0);
     glEnableVertexAttribArray(0);
 
     // Compile the vertex shader
@@ -106,7 +120,7 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     // Render loop
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_POINTS, 0, points.size());
     glBindVertexArray(0);
     // We are rendering to texture and glGetTexImage later
     // It is okay to omit glFlush at this point

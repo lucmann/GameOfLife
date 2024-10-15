@@ -60,15 +60,6 @@ private:
 
 	GridDrawRange getDrawRange_();
 
-	struct MouseMove
-	{
-		float prevX = -1.0f;
-		float prevY = -1.0f;
-		float currX = -1.0f;
-		float currY = -1.0f;
-	};
-
-
 private:
 	std::unique_ptr<GL_Renderer> glRenderer_;
 
@@ -103,7 +94,6 @@ private:
 	//bool completeBackbufferRedrawRequired_ = true;
 
 	GridDrawRange drawRange_;
-	MouseMove mouseMove_;
 	int screenSpaceDisplacementX_ = 0;
 	int screenSpaceDisplacementY_ = 0;
 
