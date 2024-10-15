@@ -69,12 +69,13 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
 {
     int pitch = 0;
     Uint16* pixels;
+    int pointNum = points.size();
 
     // Create a vertex buffer object (VBO)
     GLuint VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(Point), points.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, pointNum * sizeof(Point), points.data(), GL_STATIC_DRAW);
 
     // Create a vertex array object (VAO)
     GLuint VAO;
@@ -108,7 +109,14 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     // Render loop
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_POINTS, 0, points.size());
+
+    if (pointNum % 2 == 0)
+        glDrawArrays(GL_LINES, 0, pointNum);
+    else if (pointNum % 3 == 0)
+        glDrawArrays(GL_TRIANGLES, 0, pointNum);
+    else
+        glDrawArrays(GL_POINTS, 0, pointNum);
+
     glBindVertexArray(0);
     // We are rendering to texture and glGetTexImage later
     // It is okay to omit glFlush at this point
