@@ -70,14 +70,6 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     int pitch = 0;
     Uint16* pixels;
 
-    // Define the triangle vertices
-    GLfloat vertices[] = {
-         0.0f,  0.5f,  // top vertex
-        -0.5f, -0.5f,  // bottom left vertex
-         0.5f, -0.5f   // bottom right vertex
-    };
-
-#if 1
     // Create a vertex buffer object (VBO)
     GLuint VBO;
     glGenBuffers(1, &VBO);
@@ -126,7 +118,7 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shaderProgram);
-#endif
+
     SDL_LockTexture(sdlTexture, nullptr, (void **)&pixels, &pitch);
 
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, pixels);
