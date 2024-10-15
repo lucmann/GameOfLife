@@ -16,6 +16,7 @@
 #include <SDL3/SDL_render.h>
 
 CpuModel::CpuModel() :
+    glRenderer_(nullptr),
     gridBackBuffer_(nullptr, SDL_DestroyTexture)
 {}
 
@@ -58,18 +59,22 @@ void CpuModel::clearGrid_()
 
 void CpuModel::initBackbuffer_(SDL_Renderer* renderer)
 {
-    
     gridBackBuffer_.reset(
         SDL_CreateTexture(
             renderer,
             SDL_PIXELFORMAT_RGB565,
-            SDL_TEXTUREACCESS_TARGET,
+            SDL_TEXTUREACCESS_STREAMING, // Note that must be created with this access mode
+                                         // Otherwise it is not lockable which means that
+                                         // SDL_Texture::pixels can't be accessed directly
             activeModelParams_.modelWidth,
             activeModelParams_.modelHeight
         )
     );
     SDL_SetTextureScaleMode(gridBackBuffer_.get(), SDL_SCALEMODE_NEAREST);
     initBackbufferRequired_ = false;
+
+    glRenderer_.reset(new GL_Renderer(SDL_GetRenderWindow(renderer)));
+    glRenderer_->bindSDLTextureToFBO(gridBackBuffer_.get());
 }
 
 void CpuModel::setParameters(const ModelParameters& modelParameters)
@@ -140,10 +145,6 @@ void CpuModel::draw(SDL_Renderer* renderer)
     //I could have a bool that says the texture needs updating before drawing and handle that in core.cpp.
     //This also shouldn't be calculated every frame.. 
     
-    // At the firt time we've got only one point, so give up drawing
-    if (mouseMove_.prevX < 0)
-        return;
-
     //This should just be what is written to activeModelParams_.displacementX and activeModelParams_.displacementY
     //For that I'll need to grab window resize events.
     if (recalcDrawRange_) {
@@ -167,9 +168,7 @@ void CpuModel::draw(SDL_Renderer* renderer)
 
     SDL_SetRenderTarget(renderer, gridBackBuffer_.get());
 
-    // try to draw a line
-    SDL_SetRenderDrawColorFloat(renderer, 1.0, 0, 0, 1.0);
-    SDL_RenderLine(renderer, mouseMove_.prevX, mouseMove_.prevY, mouseMove_.currX, mouseMove_.currY);
+    std::cout << mouseMove_.currX << ", " << mouseMove_.currY << std::endl;
 
     // Uint16* pixels;
     // int pitch = 0;
@@ -196,7 +195,12 @@ void CpuModel::draw(SDL_Renderer* renderer)
     // }
 
     // SDL_UnlockTexture(gridBackBuffer_.get());
+
+    glRenderer_->drawToSDLTexture(gridBackBuffer_.get());
+
     SDL_SetRenderTarget(renderer, nullptr);
+
+
     auto destRect = SDL_FRect{
         (float)screenSpaceDisplacementX_,
         (float)screenSpaceDisplacementY_,
@@ -247,10 +251,10 @@ void CpuModel::handleSDLEvent(const SDL_Event& event)
         if (mouseButtonState & SDL_BUTTON(SDL_BUTTON_LEFT) && event.type == SDL_EVENT_MOUSE_MOTION)
         {
       
-            // activeModelParams_.displacementX += event.motion.xrel;
-            // activeModelParams_.displacementY += event.motion.yrel;
-            // //TODO:Check that it is within bounds of a maximum displacement
-            // recalcDrawRange_ = true;
+            activeModelParams_.displacementX += event.motion.xrel;
+            activeModelParams_.displacementY += event.motion.yrel;
+            //TODO:Check that it is within bounds of a maximum displacement
+            recalcDrawRange_ = true;
         }
         else if (event.type == SDL_EventType::SDL_EVENT_MOUSE_WHEEL)
         {

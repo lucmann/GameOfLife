@@ -3,6 +3,7 @@
 
 #include "abstract_model.hpp"
 #include "ColorMapper.hpp"
+#include "GlRenderer.hpp"
 
 
 #include <vector>
@@ -69,6 +70,8 @@ private:
 
 
 private:
+	std::unique_ptr<GL_Renderer> glRenderer_;
+
 	//I might change this to a struct that has a flag for if I should check it,
 	//and an int with the value. 
 	//Or I could do some bit shifting to have it all in an int.
@@ -78,7 +81,7 @@ private:
 	//Because the SDL_Texture type is obfuscated and requires an SDL deleter, 
 	//we need a template that can accept that deleter.
 	std::unique_ptr<SDL_Texture, void(*)(SDL_Texture*)> gridBackBuffer_;
-	
+
 	ModelParameters activeModelParams_{
 		true,
 		1260,

@@ -11,6 +11,9 @@ add_subdirectory(submodules/sdl3)
 #imgui does not provide a CMakeLists.txt file, so we need to add it manually
 add_subdirectory(cmake/imgui)
 
+cmake_policy(SET CMP0072 NEW)
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
 
 # Add the executable
 add_executable(gameoflife  
@@ -23,6 +26,8 @@ add_executable(gameoflife
     src/model/ColorMapper.cpp
     src/model/CpuModel.cpp
     src/model/CpuModel.hpp
+    src/model/GlRenderer.cpp
+    src/model/GlRenderer.hpp
     src/model/LifeQuadTree.hpp
     src/model/LifeQuadTree.cpp
     src/model/LifeQuadTreeModel.hpp
@@ -48,7 +53,8 @@ add_executable(gameoflife
 target_include_directories(gameoflife PRIVATE src submodules submodules/sdl3/include submodules/imgui)
 
 # Link against SDL3 and ImGui libraries
-target_link_libraries(gameoflife PRIVATE SDL3::SDL3 imgui)
+target_link_libraries(gameoflife PRIVATE SDL3::SDL3 imgui
+                                         ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
 # Set output directories for ImGui library
 set_target_properties(imgui PROPERTIES
