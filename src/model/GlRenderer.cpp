@@ -49,12 +49,8 @@ const char* vertexShaderSource = R"(
 layout(location = 0) in vec2 aPos;
 
 void main() {
-    const int SCREEN_WIDTH = 1260;
-    const int SCREEN_HEIGHT = 720;
-
-    float x_ndc = (2.0f * aPos.x) / SCREEN_WIDTH - 1.0f;
-    float y_ndc = 1.0f - (2.0f * aPos.y) / SCREEN_HEIGHT;
-    gl_Position = vec4(x_ndc, -y_ndc, 0.0, 1.0);
+    vec2 pos_ndc = 2.0f * aPos / vec2(1260, 720) - vec2(1.0, 1.0);
+    gl_Position = vec4(pos_ndc, 0.0, 1.0);
 }
 )";
 
