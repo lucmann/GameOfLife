@@ -54,8 +54,10 @@ const char* vertexShaderSource = R"(
 #version 330 core
 layout(location = 0) in vec2 aPos;
 
+uniform vec2 viewport;
+
 void main() {
-    vec2 pos_ndc = 2.0f * aPos / vec2(1260, 720) - vec2(1.0, 1.0);
+    vec2 pos_ndc = 2.0f * aPos / viewport - vec2(1.0, 1.0);
     gl_Position = vec4(pos_ndc, 0.0, 1.0);
 }
 )";
@@ -120,6 +122,10 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
 
     // Render loop
     glUseProgram(shaderProgram);
+    GLfloat values[] = {1260, 720};
+    GLuint viewport = glGetUniformLocation(shaderProgram, "viewport");
+    glUniform2fv(viewport, 1, values);
+
     glBindVertexArray(VAO);
 
     // Always draw points
