@@ -35,7 +35,9 @@ void CpuModel::setViewPort(const SDL_Rect& viewPort)
 
 void CpuModel::setMouseMove(float x, float y)
 {
-    glRenderer_->gatherPoint(x, y);
+    glRenderer_->gatherPoint(x - screenSpaceDisplacementX_,
+                             y - screenSpaceDisplacementY_,
+                             activeModelParams_.zoomLevel);
     std::cout << x << ", " << y << std::endl;
 }
 
@@ -150,14 +152,16 @@ void CpuModel::draw(SDL_Renderer* renderer)
     
     //This should just be what is written to activeModelParams_.displacementX and activeModelParams_.displacementY
     //For that I'll need to grab window resize events.
+    if (initBackbufferRequired_) initBackbuffer_(renderer);
+
     if (recalcDrawRange_) {
         screenSpaceDisplacementX_ = (viewPort_.w / 2) - (activeModelParams_.modelWidth * activeModelParams_.zoomLevel / 2) + activeModelParams_.displacementX;
         screenSpaceDisplacementY_ = (viewPort_.h / 2) - (activeModelParams_.modelHeight * activeModelParams_.zoomLevel / 2) + activeModelParams_.displacementY;
+        std::cout << "modelDisplacement: " << activeModelParams_.displacementX << ", " << activeModelParams_.displacementY<< std::endl;
+        std::cout << "screenSpaceDisplacement: " << screenSpaceDisplacementX_ << ", " << screenSpaceDisplacementY_ << std::endl;
 		drawRange_ = getDrawRange_();
 		recalcDrawRange_ = false;
 	}
-
-    if (initBackbufferRequired_) initBackbuffer_(renderer);
 
     //****Drawing by swapping my backbuffer****
     // NEXT:

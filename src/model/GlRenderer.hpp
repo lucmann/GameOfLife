@@ -1,3 +1,4 @@
+#include <array>
 #include <vector>
 #include <SDL3/SDL_video.h>
 #include <GL/glew.h>
@@ -10,7 +11,7 @@ public:
 
     void bindSDLTextureToFBO(SDL_Texture *sdlTexture);
     void drawToSDLTexture(SDL_Texture *sdlTexture);
-    void gatherPoint(float x, float y);
+    void gatherPoint(float x, float y, int zoomLevel);
     void clearPoint();
 
     struct Point {
@@ -23,6 +24,7 @@ private:
     SDL_Window *window = nullptr;
     GLuint texture{0};
     GLuint fbo{0};
+    GLint zoomLevel_{1};
 
     std::vector<Point> points;
 };

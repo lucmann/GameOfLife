@@ -14,9 +14,10 @@ GL_Renderer::GL_Renderer(SDL_Window * sdlWindow):
 }
 
 void
-GL_Renderer::gatherPoint(float x, float y)
+GL_Renderer::gatherPoint(float x, float y, int zoomLevel)
 {
     points.push_back({x, y});
+    zoomLevel_ = zoomLevel;
 }
 
 void
@@ -55,9 +56,10 @@ const char* vertexShaderSource = R"(
 layout(location = 0) in vec2 aPos;
 
 uniform vec2 viewport;
+uniform int zoomLevel;
 
 void main() {
-    vec2 pos_ndc = 2.0f * aPos / viewport - vec2(1.0, 1.0);
+    vec2 pos_ndc = 2.0f * aPos / (viewport * zoomLevel) - vec2(1.0, 1.0);
     gl_Position = vec4(pos_ndc, 0.0, 1.0);
 }
 )";
@@ -122,9 +124,12 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
 
     // Render loop
     glUseProgram(shaderProgram);
-    GLfloat values[] = {1260, 720};
+    GLfloat values[] = { 1260, 720, };
     GLuint viewport = glGetUniformLocation(shaderProgram, "viewport");
     glUniform2fv(viewport, 1, values);
+
+    GLuint zoomLevel = glGetUniformLocation(shaderProgram, "zoomLevel");
+    glUniform1i(zoomLevel, zoomLevel_);
 
     glBindVertexArray(VAO);
 
