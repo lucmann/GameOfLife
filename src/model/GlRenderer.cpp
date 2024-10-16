@@ -60,7 +60,7 @@ const char* fragmentShaderSource = R"(
 out vec4 FragColor;
 
 void main() {
-    FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red color
+    FragColor = vec4(0.596, 0.984, 0.596, 1.0); // Mint green
 }
 )";
 
