@@ -110,12 +110,12 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
 
-    if (pointNum % 2 == 0)
-        glDrawArrays(GL_LINES, 0, pointNum);
-    else if (pointNum % 3 == 0)
+    // Always draw points
+    glDrawArrays(GL_POINTS, 0, pointNum);
+
+    // Draw independent triangles only when there are proper number of points
+    if (pointNum % 3 == 0)
         glDrawArrays(GL_TRIANGLES, 0, pointNum);
-    else
-        glDrawArrays(GL_POINTS, 0, pointNum);
 
     glBindVertexArray(0);
     // We are rendering to texture and glGetTexImage later
