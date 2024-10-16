@@ -39,6 +39,11 @@ void CpuModel::setMouseMove(float x, float y)
     std::cout << x << ", " << y << std::endl;
 }
 
+void CpuModel::clear()
+{
+    glRenderer_->clearPoint();
+}
+
 void CpuModel::resizeGrid_()
 {
 	grid_.resize(activeModelParams_.modelHeight, std::vector<uint8_t>(activeModelParams_.modelWidth, 0));

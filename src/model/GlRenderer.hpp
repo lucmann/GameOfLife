@@ -11,6 +11,7 @@ public:
     void bindSDLTextureToFBO(SDL_Texture *sdlTexture);
     void drawToSDLTexture(SDL_Texture *sdlTexture);
     void gatherPoint(float x, float y);
+    void clearPoint();
 
     struct Point {
         float x;

@@ -20,6 +20,7 @@ class Interface {
 
 		void startDraw(
 			bool& modelRunning,
+			bool& surfClear,
 			int& desiredModelFPS,
 			const int measuredModelFPS = 0
 		);

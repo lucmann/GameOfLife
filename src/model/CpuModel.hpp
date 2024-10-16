@@ -35,6 +35,9 @@ public:
 	void setViewPort(const SDL_Rect& viewPort) override;
 
 	void setMouseMove(float x, float y);
+
+	void clear();
+
 	void generateModel(const ModelParameters& modelParameters);
 
 private:

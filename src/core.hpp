@@ -28,6 +28,7 @@ private:
 
     bool coreAppRunning_ = false;
     bool modelRunning_ = false;
+    bool surfClear = false;
 
     ModelParameters activeModelParams_{
         //false, 

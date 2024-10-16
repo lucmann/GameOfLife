@@ -20,6 +20,12 @@ GL_Renderer::gatherPoint(float x, float y)
 }
 
 void
+GL_Renderer::clearPoint()
+{
+    points.clear();
+}
+
+void
 GL_Renderer::bindSDLTextureToFBO(SDL_Texture *sdlTexture)
 {
     glGenTextures(1, &texture);
@@ -104,8 +110,14 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    glClearColor(0.0, 0.188, 0.286, 1.0);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glViewport(0, 0, 1260, 720);
+
+    // Retain the content unless all points have been cleared
+    if (pointNum == 0)
+        glClear(GL_COLOR_BUFFER_BIT);
+
     // Render loop
     glUseProgram(shaderProgram);
     glBindVertexArray(VAO);

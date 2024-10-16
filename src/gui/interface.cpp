@@ -12,6 +12,7 @@
 
 void Interface::startDraw(
     bool& modelRunning,
+    bool& surfClear,
     int& desiredModelFPS,
     const int measuredModelFPS) 
 {
@@ -22,6 +23,8 @@ void Interface::startDraw(
     ImGui::Begin("Options");
     ImGui::SliderInt("Desired Model FPS", &desiredModelFPS, 1, 1000);
     ImGui::Text("Measured FPS: %d", measuredModelFPS);
+    if (ImGui::SmallButton("Clear"))
+        surfClear = true;
     if (modelRunning) {
         if (ImGui::Button("Pause Model")) {
             modelRunning = false;
