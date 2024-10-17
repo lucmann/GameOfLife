@@ -73,9 +73,9 @@ void main() {
     gl_Position = gl_in[2].gl_Position;
     EmitVertex();
     gl_Position = gl_in[0].gl_Position;
+    gl_PrimitiveID = 0;
     EmitVertex();
 
-    gl_PrimitiveID = 0;
     EndPrimitive();
 
     gl_Position = gl_in[3].gl_Position;
@@ -83,9 +83,9 @@ void main() {
     gl_Position = gl_in[0].gl_Position;
     EmitVertex();
     gl_Position = gl_in[1].gl_Position;
+    gl_PrimitiveID = 1;
     EmitVertex();
 
-    gl_PrimitiveID = 1;
     EndPrimitive();
 
     gl_Position = gl_in[3].gl_Position;
@@ -93,9 +93,9 @@ void main() {
     gl_Position = gl_in[2].gl_Position;
     EmitVertex();
     gl_Position = gl_in[1].gl_Position;
+    gl_PrimitiveID = 2;
     EmitVertex();
 
-    gl_PrimitiveID = 2;
     EndPrimitive();
 }
 )";
