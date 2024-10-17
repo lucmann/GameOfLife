@@ -62,13 +62,67 @@ void main() {
 }
 )";
 
-// Fragment Shader source code
-const char* fragmentShaderSource = R"(
+const char* geometryShaderSource = R"(
 #version 330 core
+layout (lines_adjacency) in;
+layout (triangle_strip, max_vertices = 9) out;
+
+void main() {
+    gl_Position = gl_in[3].gl_Position;
+    EmitVertex();
+    gl_Position = gl_in[2].gl_Position;
+    EmitVertex();
+    gl_Position = gl_in[0].gl_Position;
+    EmitVertex();
+
+    gl_PrimitiveID = 0;
+    EndPrimitive();
+
+    gl_Position = gl_in[3].gl_Position;
+    EmitVertex();
+    gl_Position = gl_in[0].gl_Position;
+    EmitVertex();
+    gl_Position = gl_in[1].gl_Position;
+    EmitVertex();
+
+    gl_PrimitiveID = 1;
+    EndPrimitive();
+
+    gl_Position = gl_in[3].gl_Position;
+    EmitVertex();
+    gl_Position = gl_in[2].gl_Position;
+    EmitVertex();
+    gl_Position = gl_in[1].gl_Position;
+    EmitVertex();
+
+    gl_PrimitiveID = 2;
+    EndPrimitive();
+}
+)";
+
+// Fragment Shader source code
+const char* fragmentShaderSourcePoint = R"(
+#version 330 core
+
 out vec4 FragColor;
 
 void main() {
-    FragColor = vec4(0.596, 0.984, 0.596, 1.0); // Mint green
+    FragColor = vec4(1.0, 0.2, 0.302, 1.0);
+}
+)";
+
+const char* fragmentShaderSourceTriangle = R"(
+#version 330 core
+
+out vec4 FragColor;
+
+void main() {
+    if (gl_PrimitiveID == 0)
+        FragColor = vec4(1.0, 0.855, 0.725, 1.0);  // Peach Puff
+    else if (gl_PrimitiveID == 1)
+        FragColor = vec4(0.596, 0.984, 0.596, 1.0);  // Pale Green
+    else if (gl_PrimitiveID == 2)
+        FragColor = vec4(0.678, 0.847, 0.902, 1.0); // Light Blue
 }
 )";
 
@@ -97,20 +151,38 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
     glCompileShader(vertexShader);
 
-    // Compile the fragment shader
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-    glCompileShader(fragmentShader);
+    GLuint geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+    glShaderSource(geometryShader, 1, &geometryShaderSource, nullptr);
+    glCompileShader(geometryShader);
 
-    // Link the shaders into a shader program
+    // Compile the fragment shader for drawing points
+    GLuint fragmentShaderPoint = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShaderPoint, 1, &fragmentShaderSourcePoint, nullptr);
+    glCompileShader(fragmentShaderPoint);
+
+    // Compile the fragment shader for drawing triangles
+    GLuint fragmentShaderTriangle = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShaderTriangle, 1, &fragmentShaderSourceTriangle, nullptr);
+    glCompileShader(fragmentShaderTriangle);
+
+    // Link the vs and fs into a shader program without gs
+    GLuint shaderProgramNoGeom = glCreateProgram();
+    glAttachShader(shaderProgramNoGeom, vertexShader);
+    glAttachShader(shaderProgramNoGeom, fragmentShaderPoint);
+    glLinkProgram(shaderProgramNoGeom);
+
+    // Link the vs, gs and fs into a shader program
     GLuint shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
+    glAttachShader(shaderProgram, geometryShader);
+    glAttachShader(shaderProgram, fragmentShaderTriangle);
     glLinkProgram(shaderProgram);
 
     // Delete the shaders as they're now linked into the program
     glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    glDeleteShader(geometryShader);
+    glDeleteShader(fragmentShaderPoint);
+    glDeleteShader(fragmentShaderTriangle);
 
     glClearColor(0.0, 0.188, 0.286, 1.0);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -120,10 +192,11 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     if (pointNum == 0)
         glClear(GL_COLOR_BUFFER_BIT);
 
+    GLfloat values[] = { 1260, 720 };
+
     // Render loop
-    glUseProgram(shaderProgram);
-    GLfloat values[] = { 1260, 720, };
-    GLuint viewport = glGetUniformLocation(shaderProgram, "viewport");
+    glUseProgram(shaderProgramNoGeom);
+    GLuint viewport = glGetUniformLocation(shaderProgramNoGeom, "viewport");
     glUniform2fv(viewport, 1, values);
 
     glBindVertexArray(VAO);
@@ -132,8 +205,13 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     glDrawArrays(GL_POINTS, 0, pointNum);
 
     // Draw independent triangles only when there are proper number of points
-    if (pointNum % 3 == 0)
-        glDrawArrays(GL_TRIANGLES, 0, pointNum);
+    if (pointNum == 4) {
+        glUseProgram(shaderProgram);
+        GLuint viewport = glGetUniformLocation(shaderProgram, "viewport");
+        glUniform2fv(viewport, 1, values);
+
+        glDrawArrays(GL_LINES_ADJACENCY, 0, pointNum);
+    }
 
     glBindVertexArray(0);
     // We are rendering to texture and glGetTexImage later
@@ -144,6 +222,7 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(shaderProgram);
+    glDeleteProgram(shaderProgramNoGeom);
 
     SDL_LockTexture(sdlTexture, nullptr, (void **)&pixels, &pitch);
 
