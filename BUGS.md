@@ -1,4 +1,4 @@
 # zoom issue
 
 ## Description
-[](resources/screenshots/zoom.gif)
+![zoom issue](resources/screenshots/zoom.gif)
