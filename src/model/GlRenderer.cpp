@@ -118,11 +118,11 @@ out vec4 FragColor;
 
 void main() {
     if (gl_PrimitiveID == 0)
-        FragColor = vec4(1.0, 0.855, 0.725, 1.0);  // Peach Puff
+        FragColor = vec4(0.72, 0.13, 0.15, 1);  // Red
     else if (gl_PrimitiveID == 1)
-        FragColor = vec4(0.596, 0.984, 0.596, 1.0);  // Pale Green
+        FragColor = vec4(0.14, 0.58, 0.27, 1);  // Green
     else if (gl_PrimitiveID == 2)
-        FragColor = vec4(0.678, 0.847, 0.902, 1.0); // Light Blue
+        FragColor = vec4(0.03, 0.4, 0.71, 1); // Blue
 }
 )";
 
