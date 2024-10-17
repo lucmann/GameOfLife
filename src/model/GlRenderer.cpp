@@ -14,10 +14,9 @@ GL_Renderer::GL_Renderer(SDL_Window * sdlWindow):
 }
 
 void
-GL_Renderer::gatherPoint(float x, float y, int zoomLevel)
+GL_Renderer::gatherPoint(float x, float y, float zoomLevel)
 {
-    points.push_back({x, y});
-    zoomLevel_ = zoomLevel;
+    points.push_back({x, y, zoomLevel});
 }
 
 void
@@ -53,13 +52,12 @@ GL_Renderer::bindSDLTextureToFBO(SDL_Texture *sdlTexture)
 // Vertex Shader source code
 const char* vertexShaderSource = R"(
 #version 330 core
-layout(location = 0) in vec2 aPos;
+layout(location = 0) in vec3 aPos;
 
 uniform vec2 viewport;
-uniform int zoomLevel;
 
 void main() {
-    vec2 pos_ndc = 2.0f * aPos / (viewport * zoomLevel) - vec2(1.0, 1.0);
+    vec2 pos_ndc = 2.0f * aPos.xy / (viewport * aPos.z) - vec2(1.0, 1.0);
     gl_Position = vec4(pos_ndc, 0.0, 1.0);
 }
 )";
@@ -91,7 +89,7 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     GLuint VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Point), (GLvoid*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Point), (GLvoid*)0);
     glEnableVertexAttribArray(0);
 
     // Compile the vertex shader
@@ -127,9 +125,6 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     GLfloat values[] = { 1260, 720, };
     GLuint viewport = glGetUniformLocation(shaderProgram, "viewport");
     glUniform2fv(viewport, 1, values);
-
-    GLuint zoomLevel = glGetUniformLocation(shaderProgram, "zoomLevel");
-    glUniform1i(zoomLevel, zoomLevel_);
 
     glBindVertexArray(VAO);
 
