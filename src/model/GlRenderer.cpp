@@ -73,9 +73,9 @@ void main() {
     if (gl_PrimitiveID == 0)
         FragColor = vec4(0.72, 0.13, 0.15, 1.0);  // Red
     else if (gl_PrimitiveID == 1)
-        FragColor = vec4(0.14, 0.58, 0.27, 0.8);  // Green
+        FragColor = vec4(0.14, 0.58, 0.27, 1.0);  // Green
     else if (gl_PrimitiveID == 2)
-        FragColor = vec4(0.03, 0.4, 0.71, 0.8); // Blue
+        FragColor = vec4(0.03, 0.4, 0.71, 1.0); // Blue
 }
 )";
 
@@ -138,7 +138,8 @@ GL_Renderer::prepare()
     glPointSize(9.9);
 
     glEnable(GL_BLEND);
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
+    // glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
+    glBlendFuncSeparate(GL_SRC_COLOR, GL_DST_COLOR, GL_SRC_COLOR, GL_DST_COLOR);
 
     // Compile and link the shaders for drawing points
     drawPoint.shaders[Shader::Vertex] = glCreateShader(GL_VERTEX_SHADER);
