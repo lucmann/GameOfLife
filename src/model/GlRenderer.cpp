@@ -203,14 +203,7 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     GLfloat values[] = { 1260, 720 };
 
     // Render loop
-    glUseProgram(drawPoint.prog);
-    GLuint viewport = glGetUniformLocation(drawPoint.prog, "viewport");
-    glUniform2fv(viewport, 1, values);
-
     glBindVertexArray(VAO);
-
-    // Always draw points
-    glDrawArrays(GL_POINTS, 0, pointNum);
 
     // Draw independent triangles only when there are proper number of points
     if (pointNum == 4) {
@@ -220,6 +213,12 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
 
         glDrawArrays(GL_LINES_ADJACENCY, 0, pointNum);
     }
+
+    // Always draw points
+    glUseProgram(drawPoint.prog);
+    GLuint viewport = glGetUniformLocation(drawPoint.prog, "viewport");
+    glUniform2fv(viewport, 1, values);
+    glDrawArrays(GL_POINTS, 0, pointNum);
 
     glBindVertexArray(0);
     // We are rendering to texture and glGetTexImage later
