@@ -93,7 +93,7 @@ GL_Renderer::GL_Renderer(SDL_Window * sdlWindow):
 void
 GL_Renderer::gatherPoint(float x, float y, float zoomLevel)
 {
-    points.push_back({x, y, zoomLevel});
+    points.emplace_back(x, y, zoomLevel);
 }
 
 void
