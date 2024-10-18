@@ -26,7 +26,7 @@ bool Core::init_() {
     SDL_GetWindowSize(gui_.mainWindow.sdlWindow, &modelViewport.w, &modelViewport.h);
     cpuModel_.initialize(modelViewport);
 
-    gui_.initialize("Game of Life");
+    gui_.initialize("Barycenter of Triangle");
 
     coreAppRunning_ = true;
 
