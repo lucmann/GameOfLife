@@ -124,7 +124,7 @@ void Core::render_() {
     cpuModel_.draw(gui_.mainWindow.sdlRenderer);
 
     auto guiDrawTimer = std::make_optional<ImGuiScope::TimeScope>("Draw Gui");
-    gui_.interface.startDraw(modelRunning_, surfClear, desiredModelFPS_, measuredModelFPS_);
+    gui_.interface.startDraw(surfClear, desiredModelFPS_, measuredModelFPS_);
     if (surfClear) {
         cpuModel_.clear();
         surfClear = false;

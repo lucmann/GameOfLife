@@ -11,7 +11,6 @@
 //#include <SDL3/SDL.h>
 
 void Interface::startDraw(
-    bool& modelRunning,
     bool& surfClear,
     int& desiredModelFPS,
     const int measuredModelFPS) 
@@ -25,16 +24,6 @@ void Interface::startDraw(
     ImGui::Text("Measured FPS: %d", measuredModelFPS);
     if (ImGui::SmallButton("Clear"))
         surfClear = true;
-    if (modelRunning) {
-        if (ImGui::Button("Pause Model")) {
-            modelRunning = false;
-        }
-    }
-    else {
-        if (ImGui::Button("Start Model")) {
-            modelRunning = true;
-        }
-    }
 }
 
 void Interface::endDraw(SDL_Renderer* renderer) {
