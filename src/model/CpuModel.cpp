@@ -79,7 +79,7 @@ void CpuModel::initBackbuffer_(SDL_Renderer* renderer)
     gridBackBuffer_.reset(
         SDL_CreateTexture(
             renderer,
-            SDL_PIXELFORMAT_RGB565,
+            SDL_PIXELFORMAT_RGBA4444,
             SDL_TEXTUREACCESS_STREAMING, // Note that must be created with this access mode
                                          // Otherwise it is not lockable which means that
                                          // SDL_Texture::pixels can't be accessed directly

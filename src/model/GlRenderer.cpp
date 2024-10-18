@@ -71,11 +71,11 @@ out vec4 FragColor;
 
 void main() {
     if (gl_PrimitiveID == 0)
-        FragColor = vec4(0.72, 0.13, 0.15, 1);  // Red
+        FragColor = vec4(0.72, 0.13, 0.15, 1.0);  // Red
     else if (gl_PrimitiveID == 1)
-        FragColor = vec4(0.14, 0.58, 0.27, 1);  // Green
+        FragColor = vec4(0.14, 0.58, 0.27, 0.8);  // Green
     else if (gl_PrimitiveID == 2)
-        FragColor = vec4(0.03, 0.4, 0.71, 1); // Blue
+        FragColor = vec4(0.03, 0.4, 0.71, 0.8); // Blue
 }
 )";
 
@@ -119,8 +119,8 @@ GL_Renderer::prepare()
 {
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1260, 720,
-                 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1260, 720,
+                 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -136,6 +136,9 @@ GL_Renderer::prepare()
 
     glEnable(GL_POINT_SMOOTH);
     glPointSize(9.9);
+
+    glEnable(GL_BLEND);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
 
     // Compile and link the shaders for drawing points
     drawPoint.shaders[Shader::Vertex] = glCreateShader(GL_VERTEX_SHADER);
@@ -241,7 +244,7 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
 
     SDL_LockTexture(sdlTexture, nullptr, (void **)&pixels, &pitch);
 
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, pixels);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, pixels);
 
     SDL_UnlockTexture(sdlTexture);
 }
