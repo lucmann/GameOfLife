@@ -38,11 +38,18 @@ void CpuModel::setViewPort(const SDL_Rect& viewPort)
 	recalcDrawRange_ = true;
 }
 
-void CpuModel::setMouseMove(float x, float y)
+void CpuModel::setMouseMove(float x, float y, bool motion)
 {
-    glRenderer_->gatherPoint(x - screenSpaceDisplacementX_,
-                             y - screenSpaceDisplacementY_,
-                             activeModelParams_.zoomLevel);
+    if (motion)
+        glRenderer_->setMotionPoint(
+            x - screenSpaceDisplacementX_,
+            y - screenSpaceDisplacementY_,
+            activeModelParams_.zoomLevel);
+    else
+        glRenderer_->gatherPoint(
+            x - screenSpaceDisplacementX_,
+            y - screenSpaceDisplacementY_,
+            activeModelParams_.zoomLevel);
     std::cout << x << ", " << y << std::endl;
 }
 
@@ -256,17 +263,17 @@ void CpuModel::handleSDLEvent(const SDL_Event& event)
     if (!ImGui::IsWindowHovered(4) && !ImGui::IsAnyItemActive())
     {
         float mousePosX, mousePosY;
-        int mouseButtonState = SDL_GetMouseState(&mousePosX, &mousePosY);
+        // int mouseButtonState = SDL_GetMouseState(&mousePosX, &mousePosY);
 
-        if (mouseButtonState & SDL_BUTTON(SDL_BUTTON_LEFT) && event.type == SDL_EVENT_MOUSE_MOTION)
-        {
+        // if (mouseButtonState & SDL_BUTTON(SDL_BUTTON_LEFT) && event.type == SDL_EVENT_MOUSE_MOTION)
+        // {
       
-            activeModelParams_.displacementX += event.motion.xrel;
-            activeModelParams_.displacementY += event.motion.yrel;
-            //TODO:Check that it is within bounds of a maximum displacement
-            recalcDrawRange_ = true;
-        }
-        else if (event.type == SDL_EventType::SDL_EVENT_MOUSE_WHEEL)
+            // activeModelParams_.displacementX += event.motion.xrel;
+            // activeModelParams_.displacementY += event.motion.yrel;
+            // //TODO:Check that it is within bounds of a maximum displacement
+            // recalcDrawRange_ = true;
+        // }
+        if (event.type == SDL_EventType::SDL_EVENT_MOUSE_WHEEL)
         {
             int cursorModelIndexX = (mousePosX - screenSpaceDisplacementX_) / activeModelParams_.zoomLevel;
             int cursorModelIndexY = (mousePosY - screenSpaceDisplacementY_) / activeModelParams_.zoomLevel;

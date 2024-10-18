@@ -88,6 +88,11 @@ void Core::processEvents_() {
             case SDL_EventType::SDL_EVENT_KEY_DOWN:
                 handleSDL_KEYDOWN(event);
                 break;
+            case SDL_EventType::SDL_EVENT_MOUSE_MOTION:
+                if (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                    cpuModel_.setMouseMove(event.motion.x, event.motion.y, true);
+                }
+                break;
             case SDL_EventType::SDL_EVENT_MOUSE_BUTTON_DOWN:
                 if (event.button.clicks == 1) {
                     SDL_ConvertEventToRenderCoordinates(gui_.mainWindow.sdlRenderer, &event);

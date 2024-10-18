@@ -13,6 +13,7 @@ public:
     void cleanup();
     void drawToSDLTexture(SDL_Texture *sdlTexture);
     void gatherPoint(float x, float y, float zoomLevel);
+    void setMotionPoint(float x, float y, float zoomLevel);
     void clearPoint();
 
     struct Point {

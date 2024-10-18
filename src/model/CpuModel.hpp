@@ -34,7 +34,7 @@ public:
 
 	void setViewPort(const SDL_Rect& viewPort) override;
 
-	void setMouseMove(float x, float y);
+	void setMouseMove(float x, float y, bool motion=false);
 
 	void clear();
 

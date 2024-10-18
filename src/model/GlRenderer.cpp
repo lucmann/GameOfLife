@@ -93,7 +93,19 @@ GL_Renderer::GL_Renderer(SDL_Window * sdlWindow):
 void
 GL_Renderer::gatherPoint(float x, float y, float zoomLevel)
 {
+    if (points.size() >= 4)
+        return;
+
     points.emplace_back(x, y, zoomLevel);
+}
+
+void
+GL_Renderer::setMotionPoint(float x, float y, float zoomLevel)
+{
+    if (points.size() != 4)
+        return;
+
+    points.back() = {x, y, zoomLevel};
 }
 
 void
