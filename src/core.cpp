@@ -43,15 +43,16 @@ bool Core::run() {
         now = SDL_GetTicks();
 
         processEvents_();
-        if (modelRunning_ && now - lastModelUpdate > 1000 / desiredModelFPS_)
-        {
-            update_();
-            measuredModelFPS_ = 1000 / (now - lastModelUpdate);
-            lastModelUpdate = now;
-        }
+        // if (modelRunning_ && now - lastModelUpdate > 1000 / desiredModelFPS_)
+        // {
+        //     update_();
+        //     measuredModelFPS_ = 1000 / (now - lastModelUpdate);
+        //     lastModelUpdate = now;
+        // }
         if (now - lastDisplayUpdate > 1000 / displayFPS_)
         {
             render_();
+            measuredModelFPS_ = 1000 / (now - lastDisplayUpdate);
             lastDisplayUpdate = now;
         }
         int waitTime = std::min(1000 / displayFPS_ - (now - lastDisplayUpdate), 1000 / desiredModelFPS_ - (now - lastModelUpdate));
