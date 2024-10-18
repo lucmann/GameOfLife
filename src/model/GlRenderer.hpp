@@ -9,7 +9,8 @@ class GL_Renderer {
 public:
     GL_Renderer(SDL_Window *sdlWindow);
 
-    void bindSDLTextureToFBO(SDL_Texture *sdlTexture);
+    void prepare();
+    void cleanup();
     void drawToSDLTexture(SDL_Texture *sdlTexture);
     void gatherPoint(float x, float y, float zoomLevel);
     void clearPoint();
@@ -20,11 +21,25 @@ public:
         float zoom;
     };
 
+    enum Shader {
+        Vertex,
+        Geometry,
+        Fragment
+    };
+
+    struct Program {
+        GLuint prog;
+        // Note that always push back in order of vs, tcs, tes, gs, fs
+        std::array<GLuint, 3> shaders;
+    };
+
 private:
     SDL_GLContext glContext = nullptr;
     SDL_Window *window = nullptr;
     GLuint texture{0};
     GLuint fbo{0};
+    Program drawPoint;
+    Program drawTriangle;
 
     std::vector<Point> points;
 };

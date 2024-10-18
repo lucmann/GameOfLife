@@ -20,6 +20,11 @@ CpuModel::CpuModel() :
     gridBackBuffer_(nullptr, SDL_DestroyTexture)
 {}
 
+CpuModel::~CpuModel()
+{
+    glRenderer_->cleanup();
+}
+
 void CpuModel::initialize(const SDL_Rect& viewport)
 {
     setViewPort(viewport);
@@ -79,7 +84,7 @@ void CpuModel::initBackbuffer_(SDL_Renderer* renderer)
     initBackbufferRequired_ = false;
 
     glRenderer_.reset(new GL_Renderer(SDL_GetRenderWindow(renderer)));
-    glRenderer_->bindSDLTextureToFBO(gridBackBuffer_.get());
+    glRenderer_->prepare();
 }
 
 void CpuModel::setParameters(const ModelParameters& modelParameters)

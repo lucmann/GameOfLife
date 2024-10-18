@@ -2,53 +2,6 @@
 #include <SDL3/SDL_render.h>
 #include "GlRenderer.hpp"
 
-GL_Renderer::GL_Renderer(SDL_Window * sdlWindow):
-                         window(sdlWindow)
-{
-	glContext = SDL_GL_CreateContext(sdlWindow);
-
-    // Initialize GLEW
-    if (glewInit() != GLEW_OK) {
-        std::cerr << "Failed to initialize GLEW" << std::endl;
-    }
-}
-
-void
-GL_Renderer::gatherPoint(float x, float y, float zoomLevel)
-{
-    points.push_back({x, y, zoomLevel});
-}
-
-void
-GL_Renderer::clearPoint()
-{
-    points.clear();
-}
-
-void
-GL_Renderer::bindSDLTextureToFBO(SDL_Texture *sdlTexture)
-{
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1260, 720,
-                 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cerr << "Failed to create framebuffer" << std::endl;
-        return;
-    }
-
-    glEnable(GL_POINT_SMOOTH);
-    glPointSize(9.9);
-}
-
 // Vertex Shader source code
 const char* vertexShaderSource = R"(
 #version 330 core
@@ -126,6 +79,99 @@ void main() {
 }
 )";
 
+GL_Renderer::GL_Renderer(SDL_Window * sdlWindow):
+                         window(sdlWindow)
+{
+	glContext = SDL_GL_CreateContext(sdlWindow);
+
+    // Initialize GLEW
+    if (glewInit() != GLEW_OK) {
+        std::cerr << "Failed to initialize GLEW" << std::endl;
+    }
+}
+
+void
+GL_Renderer::gatherPoint(float x, float y, float zoomLevel)
+{
+    points.push_back({x, y, zoomLevel});
+}
+
+void
+GL_Renderer::clearPoint()
+{
+    points.clear();
+}
+
+void
+GL_Renderer::prepare()
+{
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1260, 720,
+                 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cerr << "Failed to create framebuffer" << std::endl;
+        return;
+    }
+
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(9.9);
+
+    // Compile and link the shaders for drawing points
+    drawPoint.shaders[Shader::Vertex] = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(drawPoint.shaders[0], 1, &vertexShaderSource, nullptr);
+    glCompileShader(drawPoint.shaders[0]);
+
+    drawPoint.shaders[Shader::Fragment] = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(drawPoint.shaders[Shader::Fragment], 1, &fragmentShaderSourcePoint, nullptr);
+    glCompileShader(drawPoint.shaders[Shader::Fragment]);
+
+    drawPoint.prog = glCreateProgram();
+    glAttachShader(drawPoint.prog, drawPoint.shaders[Shader::Vertex]);
+    glAttachShader(drawPoint.prog, drawPoint.shaders[Shader::Fragment]);
+    glLinkProgram(drawPoint.prog);
+
+    // Compile and link the shaders for drawing triangles
+    // We are sharing the vertex shader with drawPoint
+    drawTriangle.shaders[Shader::Vertex] = drawPoint.shaders[Shader::Vertex];
+
+    drawTriangle.shaders[Shader::Geometry] = glCreateShader(GL_GEOMETRY_SHADER);
+    glShaderSource(drawTriangle.shaders[Shader::Geometry], 1, &geometryShaderSource, nullptr);
+    glCompileShader(drawTriangle.shaders[Shader::Geometry]);
+
+    drawTriangle.shaders[Shader::Fragment] = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(drawTriangle.shaders[Shader::Fragment], 1, &fragmentShaderSourceTriangle, nullptr);
+    glCompileShader(drawTriangle.shaders[Shader::Fragment]);
+
+    // Link the vs, gs and fs into a shader program
+    drawTriangle.prog = glCreateProgram();
+    glAttachShader(drawTriangle.prog, drawTriangle.shaders[Shader::Vertex]);
+    glAttachShader(drawTriangle.prog, drawTriangle.shaders[Shader::Geometry]);
+    glAttachShader(drawTriangle.prog, drawTriangle.shaders[Shader::Fragment]);
+    glLinkProgram(drawTriangle.prog);
+
+    // Delete the shaders as they're now linked into the program
+    glDeleteShader(drawPoint.shaders[Shader::Vertex]);
+    glDeleteShader(drawPoint.shaders[Shader::Fragment]);
+    glDeleteShader(drawTriangle.shaders[Shader::Geometry]);
+    glDeleteShader(drawTriangle.shaders[Shader::Fragment]);
+}
+
+void
+GL_Renderer::cleanup()
+{
+    glDeleteProgram(drawTriangle.prog);
+    glDeleteProgram(drawPoint.prog);
+}
+
 void
 GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
 {
@@ -146,44 +192,6 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Point), (GLvoid*)0);
     glEnableVertexAttribArray(0);
 
-    // Compile the vertex shader
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-    glCompileShader(vertexShader);
-
-    GLuint geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
-    glShaderSource(geometryShader, 1, &geometryShaderSource, nullptr);
-    glCompileShader(geometryShader);
-
-    // Compile the fragment shader for drawing points
-    GLuint fragmentShaderPoint = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShaderPoint, 1, &fragmentShaderSourcePoint, nullptr);
-    glCompileShader(fragmentShaderPoint);
-
-    // Compile the fragment shader for drawing triangles
-    GLuint fragmentShaderTriangle = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShaderTriangle, 1, &fragmentShaderSourceTriangle, nullptr);
-    glCompileShader(fragmentShaderTriangle);
-
-    // Link the vs and fs into a shader program without gs
-    GLuint shaderProgramNoGeom = glCreateProgram();
-    glAttachShader(shaderProgramNoGeom, vertexShader);
-    glAttachShader(shaderProgramNoGeom, fragmentShaderPoint);
-    glLinkProgram(shaderProgramNoGeom);
-
-    // Link the vs, gs and fs into a shader program
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, geometryShader);
-    glAttachShader(shaderProgram, fragmentShaderTriangle);
-    glLinkProgram(shaderProgram);
-
-    // Delete the shaders as they're now linked into the program
-    glDeleteShader(vertexShader);
-    glDeleteShader(geometryShader);
-    glDeleteShader(fragmentShaderPoint);
-    glDeleteShader(fragmentShaderTriangle);
-
     glClearColor(0.0, 0.188, 0.286, 1.0);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glViewport(0, 0, 1260, 720);
@@ -195,8 +203,8 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     GLfloat values[] = { 1260, 720 };
 
     // Render loop
-    glUseProgram(shaderProgramNoGeom);
-    GLuint viewport = glGetUniformLocation(shaderProgramNoGeom, "viewport");
+    glUseProgram(drawPoint.prog);
+    GLuint viewport = glGetUniformLocation(drawPoint.prog, "viewport");
     glUniform2fv(viewport, 1, values);
 
     glBindVertexArray(VAO);
@@ -206,8 +214,8 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
 
     // Draw independent triangles only when there are proper number of points
     if (pointNum == 4) {
-        glUseProgram(shaderProgram);
-        GLuint viewport = glGetUniformLocation(shaderProgram, "viewport");
+        glUseProgram(drawTriangle.prog);
+        GLuint viewport = glGetUniformLocation(drawTriangle.prog, "viewport");
         glUniform2fv(viewport, 1, values);
 
         glDrawArrays(GL_LINES_ADJACENCY, 0, pointNum);
@@ -221,8 +229,6 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     // Clean up
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
-    glDeleteProgram(shaderProgramNoGeom);
 
     SDL_LockTexture(sdlTexture, nullptr, (void **)&pixels, &pitch);
 

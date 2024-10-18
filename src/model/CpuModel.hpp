@@ -17,7 +17,7 @@ class CpuModel : public AbstractModel
 {
 public:
 	CpuModel();
-	~CpuModel() = default;
+	~CpuModel();
 
 	void initialize(const SDL_Rect& viewport) override;
 
