@@ -1,3 +1,7 @@
+Thanks to [Cervidellus/GameOfLife](https://github.com/Cervidellus/GameOfLife), I can learn a lot about SDL3, ImGUI and OpenGL.
+
+![Barycenter of Triangle](resources/screenshots/barycenter.gif)
+
 Play around with cellular automata!
 
 ![puffer](https://github.com/user-attachments/assets/d98d4233-5967-4553-8693-14cc39affcbf)
