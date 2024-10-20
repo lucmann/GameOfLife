@@ -216,7 +216,7 @@ GL_Renderer::prepare()
     glPointSize(9.9);
 
     glEnable(GL_BLEND);
-    glBlendColor(0.0, 0.0, 0.0, 0.7);
+    glBlendColor(0.0, 0.0, 0.0, 0.618);
 
     // Compile and link the shaders for drawing points
     drawPoint.shaders[Shader::Vertex] = glCreateShader(GL_VERTEX_SHADER);
