@@ -36,6 +36,8 @@ public:
 
 	void setMouseMove(float x, float y, bool motion=false);
 
+	void setBlendFactor(const BlendFactor& blendFactor);
+
 	void clear();
 
 	void generateModel(const ModelParameters& modelParameters);
@@ -82,6 +84,8 @@ private:
 		720
 	};
 
+	BlendFactor blendFactor_;
+
 	ColorMapper colorMapper_;
 	const int aliveValue_ = 255;
 	const int deadValue_ = 0;
@@ -89,6 +93,8 @@ private:
 	float dualColorDeadColor_[3] = { 0.0, 0.0, 1.0 };
 	int deadValueDecrement_ = 10;//how fast does teh dead value decrement
 
+	//If any blend factor changes, reset blend factors
+	bool resetBlendFactor_ = true;
 	//If the zoom level or displacement changes, recalculates the draw range.
 	bool recalcDrawRange_ = true;
 	//On first pass or on resized model, backbuffer needs reinitialized.

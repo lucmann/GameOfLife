@@ -49,6 +49,22 @@ void WidgetFunctions::drawGOLRulesHeader(
     }
 }
 
+void WidgetFunctions::drawBlendFuncHeader(BlendFactor& blendFactor, bool& blendFactorChanged)
+{
+    if (ImGui::CollapsingHeader("Blend")) {
+        if (ImGui::Combo("Src RGB factor", &blendFactor.selectedSrcColorFactorIndex, blendFactor.OptionNames, 14))
+            blendFactorChanged = true;
+        if (ImGui::Combo("Dst RGB factor", &blendFactor.selectedDstColorFactorIndex, blendFactor.OptionNames, 14))
+            blendFactorChanged = true;
+        if (ImGui::Combo("Src Alpha factor", &blendFactor.selectedSrcAlphaFactorIndex, blendFactor.OptionNames, 14))
+            blendFactorChanged = true;
+        if (ImGui::Combo("Dst Alpha factor", &blendFactor.selectedDstAlphaFactorIndex, blendFactor.OptionNames, 14))
+            blendFactorChanged = true;
+        if (ImGui::Combo("Equation", &blendFactor.selectedBlendEquationIndex, blendFactor.EquationNames, 5))
+            blendFactorChanged = true;
+    }
+}
+
 void WidgetFunctions::drawVisualizationHeader(
 	ModelParameters& modelParameters,
 	ColorMapper& colorMapper,

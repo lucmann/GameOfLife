@@ -53,6 +53,17 @@ void CpuModel::setMouseMove(float x, float y, bool motion)
     std::cout << x << ", " << y << std::endl;
 }
 
+void CpuModel::setBlendFactor(const BlendFactor& blendFactor)
+{
+    glRenderer_->setBlendFactor(
+        blendFactor_.BlendFactorMap[static_cast<BlendFactor::Option>(blendFactor.selectedSrcColorFactorIndex)],
+        blendFactor_.BlendFactorMap[static_cast<BlendFactor::Option>(blendFactor.selectedDstColorFactorIndex)],
+        blendFactor_.BlendFactorMap[static_cast<BlendFactor::Option>(blendFactor.selectedSrcAlphaFactorIndex)],
+        blendFactor_.BlendFactorMap[static_cast<BlendFactor::Option>(blendFactor.selectedDstAlphaFactorIndex)],
+        blendFactor_.BlendEquationMap[static_cast<BlendFactor::Equation>(blendFactor.selectedBlendEquationIndex)]
+    );
+}
+
 void CpuModel::clear()
 {
     glRenderer_->clearPoint();
@@ -175,6 +186,11 @@ void CpuModel::draw(SDL_Renderer* renderer)
 		recalcDrawRange_ = false;
 	}
 
+    if (resetBlendFactor_) {
+        setBlendFactor(blendFactor_);
+        resetBlendFactor_ = false;
+    }
+
     //****Drawing by swapping my backbuffer****
     // NEXT:
     //-I should have it check for changes in model, so I can skip rendering step when rendering is higher frequency than model.
@@ -234,6 +250,8 @@ void CpuModel::drawImGuiWidgets(const bool& isModelRunning)
         activeModelParams_, 
         [this](const ModelParameters& params) {generateModel(params);},
         isModelRunning);
+
+    WidgetFunctions::drawBlendFuncHeader(blendFactor_, resetBlendFactor_);
 
     WidgetFunctions::drawVisualizationHeader(
 		activeModelParams_,

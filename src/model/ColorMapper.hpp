@@ -6,7 +6,94 @@
 #include <array>
 #include <map>
 
+#include <GL/glew.h>
 #include <SDL3/SDL_pixels.h>
+
+struct BlendFactor
+{
+	enum class Option
+	{
+		ZERO,
+		ONE,
+		SRC_COLOR,
+		ONE_MINUS_SRC_COLOR,
+		DST_COLOR,
+		ONE_MINUS_DST_COLOR,
+		SRC_ALPHA,
+		ONE_MINUS_SRC_ALPHA,
+		DST_ALPHA,
+		ONE_MINUS_DST_ALPHA,
+		CONSTANT_COLOR,
+		ONE_MINUS_CONSTANT_COLOR,
+		CONSTANT_ALPHA,
+		ONE_MINUS_CONSTANT_ALPHA
+	};
+
+	constexpr static const char* OptionNames[14] = {
+		"GL_ZERO",
+		"GL_ONE",
+		"GL_SRC_COLOR",
+		"GL_ONE_MINUS_SRC_COLOR",
+		"GL_DST_COLOR",
+		"GL_ONE_MINUS_DST_COLOR",
+		"GL_SRC_ALPHA",
+		"GL_ONE_MINUS_SRC_ALPHA",
+		"GL_DST_ALPHA",
+		"GL_ONE_MINUS_DST_ALPHA",
+		"GL_CONTSTANT_COLOR",
+		"GL_ONE_MINUS_CONSTANT_COLOR",
+		"GL_CONTSTANT_ALPHA",
+		"GL_ONE_MINUS_CONSTANT_ALPHA"
+	};
+
+	std::map<Option, GLenum> BlendFactorMap{
+		{Option::ZERO, GL_ZERO},
+		{Option::ONE, GL_ONE},
+		{Option::SRC_COLOR, GL_SRC_COLOR},
+		{Option::ONE_MINUS_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR},
+		{Option::DST_COLOR, GL_DST_COLOR},
+		{Option::ONE_MINUS_DST_COLOR, GL_ONE_MINUS_DST_COLOR},
+		{Option::SRC_ALPHA, GL_SRC_ALPHA},
+		{Option::ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA},
+		{Option::DST_ALPHA, GL_DST_ALPHA},
+		{Option::ONE_MINUS_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA},
+		{Option::CONSTANT_COLOR, GL_CONSTANT_COLOR},
+		{Option::ONE_MINUS_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR},
+		{Option::CONSTANT_ALPHA, GL_CONSTANT_ALPHA},
+		{Option::ONE_MINUS_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA}
+	};
+
+	enum class Equation
+	{
+		FUNC_ADD,
+		FUNC_SUBTRACT,
+		FUNC_REVERSE_SUBTRACT,
+		MIN,
+		MAX
+	};
+
+	constexpr static const char* EquationNames[5] = {
+		"GL_FUNC_ADD",
+		"GL_FUNC_SUBTRACT",
+		"GL_FUNC_REVERSE_SUBTRACT",
+		"GL_MIN",
+		"GL_MAX"
+	};
+
+	std::map<Equation, GLenum> BlendEquationMap{
+		{Equation::FUNC_ADD, GL_FUNC_ADD},
+		{Equation::FUNC_SUBTRACT, GL_FUNC_SUBTRACT},
+		{Equation::FUNC_REVERSE_SUBTRACT, GL_FUNC_REVERSE_SUBTRACT},
+		{Equation::MIN, GL_MIN},
+		{Equation::MAX, GL_MAX}
+	};
+
+	int selectedSrcColorFactorIndex = (int)Option::SRC_COLOR;
+	int selectedDstColorFactorIndex = (int)Option::SRC_COLOR;
+	int selectedSrcAlphaFactorIndex = (int)Option::SRC_COLOR;
+	int selectedDstAlphaFactorIndex = (int)Option::SRC_COLOR;
+	int selectedBlendEquationIndex = (int)Equation::FUNC_ADD;
+};
 
 class ColorMapper
 {

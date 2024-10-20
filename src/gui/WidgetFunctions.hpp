@@ -38,6 +38,8 @@ namespace WidgetFunctions
 		std::string& RLEString,
 		const bool modelRunning
 	);
+
+	void drawBlendFuncHeader(BlendFactor& blendFactor, bool& blendFactorChanged);
 }
 
 #endif //WIDGET_FUNCTIONS_HPP

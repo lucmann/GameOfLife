@@ -109,6 +109,16 @@ GL_Renderer::setMotionPoint(float x, float y, float zoomLevel)
 }
 
 void
+GL_Renderer::setBlendFactor(GLenum srcColor, GLenum dstColor, GLenum srcAlpha, GLenum dstAlpha, GLenum equation)
+{
+    blendFactors[SrcColor] = srcColor;
+    blendFactors[DstColor] = dstColor;
+    blendFactors[SrcAlpha] = srcAlpha;
+    blendFactors[DstAlpha] = dstAlpha;
+    blendFactors[Equation] = equation;
+}
+
+void
 GL_Renderer::clearPoint()
 {
     points.clear();
@@ -138,8 +148,6 @@ GL_Renderer::prepare()
     glPointSize(9.9);
 
     glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_COLOR, GL_DST_COLOR);
-    glBlendFuncSeparate(GL_SRC_COLOR, GL_DST_COLOR, GL_SRC_COLOR, GL_DST_COLOR);
 
     // Compile and link the shaders for drawing points
     drawPoint.shaders[Shader::Vertex] = glCreateShader(GL_VERTEX_SHADER);
@@ -207,6 +215,10 @@ GL_Renderer::drawToSDLTexture(SDL_Texture* sdlTexture)
     glBindVertexArray(VAO);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Point), (GLvoid*)0);
     glEnableVertexAttribArray(0);
+
+    glBlendFuncSeparate(blendFactors[SrcColor], blendFactors[DstColor],
+                        blendFactors[SrcAlpha], blendFactors[DstAlpha]);
+    glBlendEquation(blendFactors[Equation]);
 
     glClearColor(0.0, 0.188, 0.286, 1.0);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
