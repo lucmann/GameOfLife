@@ -88,10 +88,10 @@ struct BlendFactor
 		{Equation::MAX, GL_MAX}
 	};
 
-	int selectedSrcColorFactorIndex = (int)Option::SRC_COLOR;
-	int selectedDstColorFactorIndex = (int)Option::SRC_COLOR;
-	int selectedSrcAlphaFactorIndex = (int)Option::SRC_COLOR;
-	int selectedDstAlphaFactorIndex = (int)Option::SRC_COLOR;
+	int selectedSrcColorFactorIndex = (int)Option::CONSTANT_ALPHA;
+	int selectedDstColorFactorIndex = (int)Option::ONE_MINUS_CONSTANT_ALPHA;
+	int selectedSrcAlphaFactorIndex = (int)Option::ONE;
+	int selectedDstAlphaFactorIndex = (int)Option::ONE;
 	int selectedBlendEquationIndex = (int)Equation::FUNC_ADD;
 };
 

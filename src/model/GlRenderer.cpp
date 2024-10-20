@@ -20,36 +20,104 @@ const char* geometryShaderSource = R"(
 layout (lines_adjacency) in;
 layout (triangle_strip, max_vertices = 9) out;
 
+bool edgeFunction(vec4 a, vec4 b, vec4 c)
+{
+    return ((c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x) >= 0);
+}
+
 void main() {
-    gl_Position = gl_in[3].gl_Position;
-    EmitVertex();
-    gl_Position = gl_in[2].gl_Position;
-    EmitVertex();
-    gl_Position = gl_in[0].gl_Position;
-    gl_PrimitiveID = 0;
-    EmitVertex();
+    vec4 V0 = gl_in[0].gl_Position;
+    vec4 V1 = gl_in[1].gl_Position;
+    vec4 V2 = gl_in[2].gl_Position;
+    vec4 P0 = gl_in[3].gl_Position;
 
-    EndPrimitive();
+    bool outside_02 = true;
 
-    gl_Position = gl_in[3].gl_Position;
-    EmitVertex();
-    gl_Position = gl_in[0].gl_Position;
-    EmitVertex();
-    gl_Position = gl_in[1].gl_Position;
-    gl_PrimitiveID = 1;
-    EmitVertex();
+    outside_02 = outside_02 && edgeFunction(V0, V1, P0);
+    outside_02 = outside_02 && edgeFunction(V1, V2, P0);
 
-    EndPrimitive();
+    // Invariance
+    // Primitive 0: Red
+    // Primitive 1: Green
+    // Primitive 2: Blue
+    // Top primitive is always destination in blend
+    //
+    // Variation depends on where P0 locates
+    if (outside_02) {
+        // Red is destination in blend
+        gl_PrimitiveID = 0;
+        gl_Position = P0; EmitVertex();
+        gl_Position = V2; EmitVertex();
+        gl_Position = V0; EmitVertex();
 
-    gl_Position = gl_in[3].gl_Position;
-    EmitVertex();
-    gl_Position = gl_in[2].gl_Position;
-    EmitVertex();
-    gl_Position = gl_in[1].gl_Position;
-    gl_PrimitiveID = 2;
-    EmitVertex();
+        EndPrimitive();
 
-    EndPrimitive();
+        gl_PrimitiveID = 1;
+        gl_Position = P0; EmitVertex();
+        gl_Position = V0; EmitVertex();
+        gl_Position = V1; EmitVertex();
+
+        EndPrimitive();
+
+        gl_PrimitiveID = 2;
+        gl_Position = P0; EmitVertex();
+        gl_Position = V2; EmitVertex();
+        gl_Position = V1; EmitVertex();
+
+        EndPrimitive();
+    }
+    else {
+        bool outside_01 = true;
+        outside_01 = outside_01 && edgeFunction(V2, V0, P0);
+        outside_01 = outside_01 && edgeFunction(V1, V2, P0);
+
+        if (outside_01) {
+            // Green is destination in blend
+            gl_PrimitiveID = 1;
+            gl_Position = P0; EmitVertex();
+            gl_Position = V0; EmitVertex();
+            gl_Position = V1; EmitVertex();
+
+            EndPrimitive();
+
+            gl_PrimitiveID = 2;
+            gl_Position = P0; EmitVertex();
+            gl_Position = V2; EmitVertex();
+            gl_Position = V1; EmitVertex();
+
+            EndPrimitive();
+
+            gl_PrimitiveID = 0;
+            gl_Position = P0; EmitVertex();
+            gl_Position = V2; EmitVertex();
+            gl_Position = V0; EmitVertex();
+
+            EndPrimitive();
+        }
+        else {
+            // Blue is destination in blend
+            gl_PrimitiveID = 2;
+            gl_Position = P0; EmitVertex();
+            gl_Position = V2; EmitVertex();
+            gl_Position = V1; EmitVertex();
+
+            EndPrimitive();
+
+            gl_PrimitiveID = 1;
+            gl_Position = P0; EmitVertex();
+            gl_Position = V0; EmitVertex();
+            gl_Position = V1; EmitVertex();
+
+            EndPrimitive();
+
+            gl_PrimitiveID = 0;
+            gl_Position = P0; EmitVertex();
+            gl_Position = V2; EmitVertex();
+            gl_Position = V0; EmitVertex();
+
+            EndPrimitive();
+        }
+    }
 }
 )";
 
@@ -148,6 +216,7 @@ GL_Renderer::prepare()
     glPointSize(9.9);
 
     glEnable(GL_BLEND);
+    glBlendColor(0.0, 0.0, 0.0, 0.7);
 
     // Compile and link the shaders for drawing points
     drawPoint.shaders[Shader::Vertex] = glCreateShader(GL_VERTEX_SHADER);
