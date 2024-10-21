@@ -63,7 +63,7 @@ void WidgetFunctions::drawBlendFuncHeader(BlendFactor& blendFactor, bool& blendF
         if (ImGui::Combo("Equation", &blendFactor.selectedBlendEquationIndex, blendFactor.EquationNames, 5))
             blendFactorChanged = true;
 
-        if (ImGui::CollapsingHeader("Constant Color")) {
+        if (ImGui::CollapsingHeader("Constant Color"), ImGuiTreeNodeFlags_DefaultOpen) {
             if (ImGui::SliderFloat("R", &blendFactor.constantColor[0], 0.001, 1)) blendFactorChanged = true;
             if (ImGui::SliderFloat("G", &blendFactor.constantColor[1], 0.001, 1)) blendFactorChanged = true;
             if (ImGui::SliderFloat("B", &blendFactor.constantColor[2], 0.001, 1)) blendFactorChanged = true;
