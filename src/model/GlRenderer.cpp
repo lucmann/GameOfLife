@@ -31,20 +31,63 @@ void main() {
     vec4 V2 = gl_in[2].gl_Position;
     vec4 P0 = gl_in[3].gl_Position;
 
-    bool outside_02 = true;
-
-    outside_02 = outside_02 && edgeFunction(V0, V1, P0);
-    outside_02 = outside_02 && edgeFunction(V1, V2, P0);
+    // Note that always counter clock wise, which means only being V2, V0
+    // Arguments passed in the other way around will lead to outside-or-inside
+    // in the other way around.
+    bool outside_02 = edgeFunction(V2, V0, P0);
 
     // Invariance
     // Primitive 0: Red
     // Primitive 1: Green
     // Primitive 2: Blue
-    // Top primitive is always destination in blend
+    // Top primitive(s) is always destination in blend
     //
     // Variation depends on where P0 locates
     if (outside_02) {
+        // ****\    /
+        // *****\  /
+        // **** 0\/
+        // ******/\
+        // *****/**\
+        // ____/____\_____
+        // * 1/******\2
+        // **/********\
+        //
+        // Red is source in blend
+
+        gl_PrimitiveID = 1;
+        gl_Position = P0; EmitVertex();
+        gl_Position = V0; EmitVertex();
+        gl_Position = V1; EmitVertex();
+
+        EndPrimitive();
+
+        gl_PrimitiveID = 2;
+        gl_Position = P0; EmitVertex();
+        gl_Position = V2; EmitVertex();
+        gl_Position = V1; EmitVertex();
+
+        EndPrimitive();
+
+        gl_PrimitiveID = 0;
+        gl_Position = P0; EmitVertex();
+        gl_Position = V2; EmitVertex();
+        gl_Position = V0; EmitVertex();
+
+        EndPrimitive();
+    }
+    else {
+        //     \****/*****
+        //      \**/******
+        //      0\/*******
+        //       /\*******
+        //      /  \******
+        // ____/____\_____
+        //   1/      \2 **
+        //   /        \***
+        //
         // Red is destination in blend
+
         gl_PrimitiveID = 0;
         gl_Position = P0; EmitVertex();
         gl_Position = V2; EmitVertex();
@@ -65,58 +108,6 @@ void main() {
         gl_Position = V1; EmitVertex();
 
         EndPrimitive();
-    }
-    else {
-        bool outside_01 = true;
-        outside_01 = outside_01 && edgeFunction(V2, V0, P0);
-        outside_01 = outside_01 && edgeFunction(V1, V2, P0);
-
-        if (outside_01) {
-            // Green is destination in blend
-            gl_PrimitiveID = 1;
-            gl_Position = P0; EmitVertex();
-            gl_Position = V0; EmitVertex();
-            gl_Position = V1; EmitVertex();
-
-            EndPrimitive();
-
-            gl_PrimitiveID = 2;
-            gl_Position = P0; EmitVertex();
-            gl_Position = V2; EmitVertex();
-            gl_Position = V1; EmitVertex();
-
-            EndPrimitive();
-
-            gl_PrimitiveID = 0;
-            gl_Position = P0; EmitVertex();
-            gl_Position = V2; EmitVertex();
-            gl_Position = V0; EmitVertex();
-
-            EndPrimitive();
-        }
-        else {
-            // Blue is destination in blend
-            gl_PrimitiveID = 2;
-            gl_Position = P0; EmitVertex();
-            gl_Position = V2; EmitVertex();
-            gl_Position = V1; EmitVertex();
-
-            EndPrimitive();
-
-            gl_PrimitiveID = 1;
-            gl_Position = P0; EmitVertex();
-            gl_Position = V0; EmitVertex();
-            gl_Position = V1; EmitVertex();
-
-            EndPrimitive();
-
-            gl_PrimitiveID = 0;
-            gl_Position = P0; EmitVertex();
-            gl_Position = V2; EmitVertex();
-            gl_Position = V0; EmitVertex();
-
-            EndPrimitive();
-        }
     }
 }
 )";
