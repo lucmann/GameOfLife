@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(gameoflife LANGUAGES CXX)
 
+include(CheckCXXCompilerFlag)
+
+check_cxx_compiler_flag("-std=c++20" COMPILER_SUPPORTS_CXX20)
+
+if (NOT COMPILER_SUPPORTS_CXX20)
+    message(FATAL_ERROR "Compiler does not support C++20")
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
