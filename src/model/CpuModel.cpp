@@ -60,7 +60,8 @@ void CpuModel::setBlendFactor(const BlendFactor& blendFactor)
         blendFactor_.BlendFactorMap[static_cast<BlendFactor::Option>(blendFactor.selectedDstColorFactorIndex)],
         blendFactor_.BlendFactorMap[static_cast<BlendFactor::Option>(blendFactor.selectedSrcAlphaFactorIndex)],
         blendFactor_.BlendFactorMap[static_cast<BlendFactor::Option>(blendFactor.selectedDstAlphaFactorIndex)],
-        blendFactor_.BlendEquationMap[static_cast<BlendFactor::Equation>(blendFactor.selectedBlendEquationIndex)]
+        blendFactor_.BlendEquationMap[static_cast<BlendFactor::Equation>(blendFactor.selectedBlendEquationIndex)],
+        blendFactor_.constantColor
     );
 }
 

@@ -16,7 +16,7 @@ public:
     void drawToSDLTexture(SDL_Texture *sdlTexture);
     void gatherPoint(float x, float y, float zoomLevel);
     void setMotionPoint(float x, float y, float zoomLevel);
-    void setBlendFactor(GLenum srcColor, GLenum dstColor, GLenum srcAlpha, GLenum dstAlpha, GLenum equation);
+    void setBlendFactor(GLenum srcColor, GLenum dstColor, GLenum srcAlpha, GLenum dstAlpha, GLenum equation, std::vector<float> constant);
     void clearPoint();
 
     struct Point {
@@ -54,5 +54,6 @@ private:
     Program drawTriangle;
 
     std::array<GLenum, 5> blendFactors;
+    std::vector<GLfloat> blendConstant{0.0, 0.0, 0.0, 1.0};
     std::vector<Point> points;
 };

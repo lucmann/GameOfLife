@@ -93,6 +93,7 @@ struct BlendFactor
 	int selectedSrcAlphaFactorIndex = (int)Option::ONE;
 	int selectedDstAlphaFactorIndex = (int)Option::ONE;
 	int selectedBlendEquationIndex = (int)Equation::FUNC_ADD;
+	std::vector<float> constantColor{0.0f, 0.0f, 0.0f, 0.7f};
 };
 
 class ColorMapper
