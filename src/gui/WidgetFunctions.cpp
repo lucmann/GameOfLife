@@ -51,7 +51,7 @@ void WidgetFunctions::drawGOLRulesHeader(
 
 void WidgetFunctions::drawBlendFuncHeader(BlendFactor& blendFactor, bool& blendFactorChanged)
 {
-    if (ImGui::CollapsingHeader("Blend")) {
+    if (ImGui::CollapsingHeader("Blend", ImGuiTreeNodeFlags_DefaultOpen)) {
         if (ImGui::Combo("Src RGB factor", &blendFactor.selectedSrcColorFactorIndex, blendFactor.OptionNames, 14))
             blendFactorChanged = true;
         if (ImGui::Combo("Dst RGB factor", &blendFactor.selectedDstColorFactorIndex, blendFactor.OptionNames, 14))
