@@ -200,7 +200,6 @@ void CpuModel::draw(SDL_Renderer* renderer)
         std::cout << "Invalid backbuffer!\n";
         return;
     }
-    auto drawBackBufferTimer = std::make_optional<ImGuiScope::TimeScope>("Draw My Backbuffer");
 
     SDL_SetRenderTarget(renderer, gridBackBuffer_.get());
 
@@ -241,8 +240,6 @@ void CpuModel::draw(SDL_Renderer* renderer)
         (float)grid_[0].size() * activeModelParams_.zoomLevel, 
         (float)grid_.size() * activeModelParams_.zoomLevel };
     SDL_RenderTexture(renderer, gridBackBuffer_.get(), nullptr, &destRect);
-
-    drawBackBufferTimer.reset();
 }
 
 void CpuModel::drawImGuiWidgets(const bool& isModelRunning)
