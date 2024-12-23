@@ -32,6 +32,13 @@ Here is what you can do:
 ![GOL2](https://github.com/user-attachments/assets/698e2586-0422-4bf2-a8f5-eef92775ae54)
 
 Build Instructions:
+
+Since the project is using some of C++20 features such as `std::format`, `std::make_optional`, to build it, make sure your compilers meet at lest:
+
+- GCC 13
+- CLANG 14
+- MSVC 16.10/VS 2019
+
 It uses a pretty standard CMAKE build.
 Make sure to get the submodules when you clone:
 ```
