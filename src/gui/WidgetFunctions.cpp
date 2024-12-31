@@ -70,6 +70,11 @@ void WidgetFunctions::drawBlendFuncHeader(BlendFactor& blendFactor, bool& blendF
             if (ImGui::SliderFloat("A", &blendFactor.constantColor[3], 0.001, 1)) blendFactorChanged = true;
         }
     }
+
+    float my_color[4] = { blendFactor.constantColor[0], blendFactor.constantColor[1], blendFactor.constantColor[2], blendFactor.constantColor[3] };
+    ImGui::ColorEdit4("Color", my_color);
+
+    if (ImGui::IsAnyItemHovered()) ImGui::SetTooltip("The constant color used in blending operations.");
 }
 
 void WidgetFunctions::drawVisualizationHeader(
