@@ -266,6 +266,15 @@ void CpuModel::drawImGuiWidgets(const bool& isModelRunning)
         inputString_,
         isModelRunning
         );
+
+    ImGui::SetCursorPos(ImVec2(0, 0));
+    ImGui::InvisibleButton("##model", ImVec2(viewPort_.w, viewPort_.h));
+
+    if (ImGui::IsItemHovered()) {
+        ImGui::BeginTooltip();
+        ImGui::Text("Hovering over model");
+        ImGui::EndTooltip();
+    }
 }
 
 void CpuModel::handleSDLEvent(const SDL_Event& event)

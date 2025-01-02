@@ -26,6 +26,8 @@ class Interface {
 
 		void endDraw(SDL_Renderer* renderer);
 
+		void renderOverlay(SDL_Renderer* renderer);
+
 	private:
 		SDL_Rect imGuiRect_{0, 0, 0, 0};
 };

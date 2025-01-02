@@ -131,6 +131,7 @@ void Core::render_() {
     cpuModel_.drawImGuiWidgets(modelRunning_);
     ImGuiScope::drawResultsHeader("Timer Results");
     gui_.interface.endDraw(gui_.mainWindow.sdlRenderer);
+    gui_.interface.renderOverlay(gui_.mainWindow.sdlRenderer);
 
     gui_.mainWindow.renderPresent();
 }
